@@ -47,14 +47,14 @@ hrs_design <-
 		working_in_2014 = r12work ,
 
 		marital_status_in_1996 =
-			factor( r3mstat , labels =
+			factor( r3mstat , levels = 1:8 , labels =
 				c( "Married" , "Married, spouse absent" ,
 				"Partnered" , "Separated" , "Divorced" ,
 				"Separated/divorced" , "Widowed" ,
 				"Never married" ) ) ,
 				
 		marital_status_in_2014 =
-			factor( r12mstat , labels =
+			factor( r12mstat , levels = 1:8 , labels =
 				c( "Married" , "Married, spouse absent" ,
 				"Partnered" , "Separated" , "Divorced" ,
 				"Separated/divorced" , "Widowed" ,
