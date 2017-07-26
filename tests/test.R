@@ -20,7 +20,15 @@ library(survey)
 
 hrs_df <- 
 	readRDS( list.files( hrs_cat$output_folder , full.names = TRUE ) )
+	
+# RAM cleanup
+keep_vars <- 
+	c( "raehsamp" , "raehstrat" , "r3wtresp" , 
+		"r3work" , "r12work" , "h12ahous" ,
+		"r3mstat" , "r12mstat" , "h12ahous" )
 
+hrs_df <- hrs_df[ keep_vars ]
+	
 # community residents aged 50+ in 1996
 hrs_design <- 
 	svydesign(
@@ -39,7 +47,7 @@ hrs_design <-
 		working_in_2014 = r12work ,
 
 		marital_status_in_1996 =
-			factor( r4mstat , labels =
+			factor( r3mstat , labels =
 				c( "Married" , "Married, spouse absent" ,
 				"Partnered" , "Separated" , "Divorced" ,
 				"Separated/divorced" , "Widowed" ,
