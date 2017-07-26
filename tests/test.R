@@ -23,7 +23,7 @@ hrs_df <-
 	
 # RAM cleanup
 keep_vars <- 
-	c( "raehsamp" , "raehstrat" , "r3wtresp" , 
+	c( "raehsamp" , "raestrat" , "r3wtresp" , 
 		"r3work" , "r12work" , "h12ahous" ,
 		"r3mstat" , "r12mstat" , "h12ahous" )
 
