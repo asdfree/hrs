@@ -42,6 +42,8 @@ hrs_design <-
 	update( 
 		hrs_design , 
 
+		one = 1 ,
+		
 		working_in_1996 = r3work ,
 
 		working_in_2014 = r12work ,
