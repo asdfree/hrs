@@ -9,8 +9,8 @@ hrs_cat <-
 		your_username = my_username , 
 		your_password = my_password )
 
-# 2015 only
-hrs_cat <- subset( hrs_cat , year == 2015 )
+# RAND consolidated file only
+hrs_cat <- subset( hrs_cat , grepl( 'rand([a-z]+)stata\.zip' , file_name ) )
 # download the microdata to your local computer
 stopifnot( nrow( hrs_cat ) > 0 )
 
@@ -18,48 +18,63 @@ stopifnot( nrow( hrs_cat ) > 0 )
 
 library(survey)
 
-hrs_df <- readRDS( file.path( getwd() , "2015 main.rds" ) )
+hrs_df <- 
+	readRDS( list.files( hrs_cat$output_folder , full.names = TRUE ) )
 
+# community residents aged 50+ in 1996
 hrs_design <- 
-	svydesign( 
-		~ psu , 
-		strata = ~ stratum , 
-		data = hrs_df , 
-		weights = ~ weight , 
-		nest = TRUE 
+	svydesign(
+		id = ~ raehsamp ,
+		strata = ~ raestrat ,
+		weights = ~ r3wtresp , 
+		nest = TRUE ,
+		data = subset( hrs_df , r3wtresp > 0 )
 	)
 hrs_design <- 
 	update( 
 		hrs_design , 
-		q2 = q2 ,
-		never_rarely_wore_bike_helmet = as.numeric( qn8 == 1 ) ,
-		ever_smoked_marijuana = as.numeric( qn47 == 1 ) ,
-		ever_tried_to_quit_cigarettes = as.numeric( q36 > 2 ) ,
-		smoked_cigarettes_past_year = as.numeric( q36 > 1 )
+
+		working_in_1996 = r3work ,
+
+		working_in_2014 = r12work ,
+
+		marital_status_in_1996 =
+			factor( r4mstat , labels =
+				c( "Married" , "Married, spouse absent" ,
+				"Partnered" , "Separated" , "Divorced" ,
+				"Separated/divorced" , "Widowed" ,
+				"Never married" ) ) ,
+				
+		marital_status_in_2014 =
+			factor( r12mstat , labels =
+				c( "Married" , "Married, spouse absent" ,
+				"Partnered" , "Separated" , "Divorced" ,
+				"Separated/divorced" , "Widowed" ,
+				"Never married" ) )
 	)
 sum( weights( hrs_design , "sampling" ) != 0 )
 
-svyby( ~ one , ~ ever_smoked_marijuana , hrs_design , unwtd.count )
+svyby( ~ one , ~ marital_status_in_1996 , hrs_design , unwtd.count )
 svytotal( ~ one , hrs_design )
 
-svyby( ~ one , ~ ever_smoked_marijuana , hrs_design , svytotal )
-svymean( ~ bmipct , hrs_design , na.rm = TRUE )
+svyby( ~ one , ~ marital_status_in_1996 , hrs_design , svytotal )
+svymean( ~ h12ahous , hrs_design , na.rm = TRUE )
 
-svyby( ~ bmipct , ~ ever_smoked_marijuana , hrs_design , svymean , na.rm = TRUE )
-svymean( ~ q2 , hrs_design , na.rm = TRUE )
+svyby( ~ h12ahous , ~ marital_status_in_1996 , hrs_design , svymean , na.rm = TRUE )
+svymean( ~ marital_status_in_2014 , hrs_design , na.rm = TRUE )
 
-svyby( ~ q2 , ~ ever_smoked_marijuana , hrs_design , svymean , na.rm = TRUE )
-svytotal( ~ bmipct , hrs_design , na.rm = TRUE )
+svyby( ~ marital_status_in_2014 , ~ marital_status_in_1996 , hrs_design , svymean , na.rm = TRUE )
+svytotal( ~ h12ahous , hrs_design , na.rm = TRUE )
 
-svyby( ~ bmipct , ~ ever_smoked_marijuana , hrs_design , svytotal , na.rm = TRUE )
-svytotal( ~ q2 , hrs_design , na.rm = TRUE )
+svyby( ~ h12ahous , ~ marital_status_in_1996 , hrs_design , svytotal , na.rm = TRUE )
+svytotal( ~ marital_status_in_2014 , hrs_design , na.rm = TRUE )
 
-svyby( ~ q2 , ~ ever_smoked_marijuana , hrs_design , svytotal , na.rm = TRUE )
-svyquantile( ~ bmipct , hrs_design , 0.5 , na.rm = TRUE )
+svyby( ~ marital_status_in_2014 , ~ marital_status_in_1996 , hrs_design , svytotal , na.rm = TRUE )
+svyquantile( ~ h12ahous , hrs_design , 0.5 , na.rm = TRUE )
 
 svyby( 
-	~ bmipct , 
-	~ ever_smoked_marijuana , 
+	~ h12ahous , 
+	~ marital_status_in_1996 , 
 	hrs_design , 
 	svyquantile , 
 	0.5 ,
@@ -68,14 +83,14 @@ svyby(
 	na.rm = TRUE
 )
 svyratio( 
-	numerator = ~ ever_tried_to_quit_cigarettes , 
-	denominator = ~ smoked_cigarettes_past_year , 
+	numerator = ~ h4ahous , 
+	denominator = ~ h12ahous , 
 	hrs_design ,
 	na.rm = TRUE
 )
-sub_hrs_design <- subset( hrs_design , qn41 == 1 )
-svymean( ~ bmipct , sub_hrs_design , na.rm = TRUE )
-this_result <- svymean( ~ bmipct , hrs_design , na.rm = TRUE )
+sub_hrs_design <- subset( hrs_design , working_in_1996 == 1 )
+svymean( ~ h12ahous , sub_hrs_design , na.rm = TRUE )
+this_result <- svymean( ~ h12ahous , hrs_design , na.rm = TRUE )
 
 coef( this_result )
 SE( this_result )
@@ -84,8 +99,8 @@ cv( this_result )
 
 grouped_result <-
 	svyby( 
-		~ bmipct , 
-		~ ever_smoked_marijuana , 
+		~ h12ahous , 
+		~ marital_status_in_1996 , 
 		hrs_design , 
 		svymean ,
 		na.rm = TRUE 
@@ -96,22 +111,22 @@ SE( grouped_result )
 confint( grouped_result )
 cv( grouped_result )
 degf( hrs_design )
-svyvar( ~ bmipct , hrs_design , na.rm = TRUE )
+svyvar( ~ h12ahous , hrs_design , na.rm = TRUE )
 # SRS without replacement
-svymean( ~ bmipct , hrs_design , na.rm = TRUE , deff = TRUE )
+svymean( ~ h12ahous , hrs_design , na.rm = TRUE , deff = TRUE )
 
 # SRS with replacement
-svymean( ~ bmipct , hrs_design , na.rm = TRUE , deff = "replace" )
-svyciprop( ~ never_rarely_wore_bike_helmet , hrs_design ,
+svymean( ~ h12ahous , hrs_design , na.rm = TRUE , deff = "replace" )
+svyciprop( ~ working_in_2014 , hrs_design ,
 	method = "likelihood" , na.rm = TRUE )
-svyttest( bmipct ~ never_rarely_wore_bike_helmet , hrs_design )
+svyttest( h12ahous ~ working_in_2014 , hrs_design )
 svychisq( 
-	~ never_rarely_wore_bike_helmet + q2 , 
+	~ working_in_2014 + marital_status_in_2014 , 
 	hrs_design 
 )
 glm_result <- 
 	svyglm( 
-		bmipct ~ never_rarely_wore_bike_helmet + q2 , 
+		h12ahous ~ working_in_2014 + marital_status_in_2014 , 
 		hrs_design 
 	)
 
@@ -119,17 +134,9 @@ summary( glm_result )
 library(srvyr)
 hrs_srvyr_design <- as_survey( hrs_design )
 hrs_srvyr_design %>%
-	summarize( mean = survey_mean( bmipct , na.rm = TRUE ) )
+	summarize( mean = survey_mean( h12ahous , na.rm = TRUE ) )
 
 hrs_srvyr_design %>%
-	group_by( ever_smoked_marijuana ) %>%
-	summarize( mean = survey_mean( bmipct , na.rm = TRUE ) )
-
-unwtd.count( ~ never_rarely_wore_bike_helmet , yrbss_design )
-
-svytotal( ~ one , subset( yrbss_design , !is.na( never_rarely_wore_bike_helmet ) ) )
- 
-svymean( ~ never_rarely_wore_bike_helmet , yrbss_design , na.rm = TRUE )
-
-svyciprop( ~ never_rarely_wore_bike_helmet , yrbss_design , na.rm = TRUE , method = "beta" )
+	group_by( marital_status_in_1996 ) %>%
+	summarize( mean = survey_mean( h12ahous , na.rm = TRUE ) )
 
