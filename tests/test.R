@@ -10,7 +10,7 @@ hrs_cat <-
 		your_password = my_password )
 
 # RAND consolidated file only
-hrs_cat <- subset( hrs_cat , grepl( 'rand([a-z]+)stata\.zip' , file_name ) )
+hrs_cat <- subset( hrs_cat , grepl( 'rand([a-z]+)stata\\.zip' , file_name ) )
 # download the microdata to your local computer
 stopifnot( nrow( hrs_cat ) > 0 )
 
