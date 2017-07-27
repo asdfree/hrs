@@ -25,7 +25,7 @@ hrs_df <-
 keep_vars <- 
 	c( "raehsamp" , "raestrat" , "r3wtresp" , 
 		"r3work" , "r12work" , "h12ahous" ,
-		"r3mstat" , "r12mstat" , "h12ahous" )
+		"r3mstat" , "r12mstat" , "h4ahous" )
 
 hrs_df <- hrs_df[ keep_vars ]
 	
