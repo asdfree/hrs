@@ -8,7 +8,6 @@ hrs_cat <-
 		output_dir = file.path( getwd() ) , 
 		your_username = my_username , 
 		your_password = my_password )
-	)
 
 # sample 75% of the records
 which_records <- sample( seq( nrow( hrs_cat ) ) , round( nrow( hrs_cat ) * 0.75 ) )
@@ -18,5 +17,5 @@ hrs_cat <- unique( rbind( hrs_cat[ which_records , ] , subset( hrs_cat , grepl( 
 
 lodown( "hrs" , hrs_cat , 
 		your_username = my_username , 
-		your_password = my_password
-)
+		your_password = my_password )
+
