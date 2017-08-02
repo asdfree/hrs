@@ -13,7 +13,7 @@ hrs_cat <-
 # sample 75% of the records
 which_records <- sample( seq( nrow( hrs_cat ) ) , round( nrow( hrs_cat ) * 0.75 ) )
 
-# always sample the rand stata file
+# always sample the rand a-z stata file
 hrs_cat <- unique( rbind( hrs_cat[ which_records , ] , subset( hrs_cat , grepl( 'rand([a-z]+)stata\\\\.zip' , file_name ) ) ) )
 
 lodown( "hrs" , hrs_cat , 
