@@ -1,6 +1,8 @@
 if ( .Platform$OS.type == 'windows' ) memory.limit( 256000 )
 my_username <- Sys.getenv( "my_username" )
 my_password <- Sys.getenv( "my_password" )
+this_sample_break <- Sys.getenv( "this_sample_break" )
+
 library(lodown)
 
 hrs_cat <-
@@ -9,11 +11,9 @@ hrs_cat <-
 		your_username = my_username , 
 		your_password = my_password )
 
-# sample 50% of the records
-which_records <- sample( seq( nrow( hrs_cat ) ) , round( nrow( hrs_cat ) * 0.50 ) )
+record_categories <- ceiling( seq( nrow( hrs_cat ) ) / ceiling( nrow( hrs_cat ) / 3 ) )
 
-# always sample the rand a-z stata file
-hrs_cat <- unique( rbind( hrs_cat[ which_records , ] , subset( hrs_cat , grepl( 'rand([a-z]+)stata\\.zip' , file_name ) ) ) )
+hrs_cat <- unique( rbind( hrs_cat[ record_categories == this_sample_break , ] , hrs_cat[ grepl( 'rand([a-z]+)stata\\.zip' , hrs_cat$file_name ) , ] ) )
 
 lodown( "hrs" , hrs_cat , 
 		your_username = my_username , 
