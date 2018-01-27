@@ -13,9 +13,7 @@ hrs_cat <-
 		your_username = my_username , 
 		your_password = my_password )
 
-record_categories <- ceiling( seq( nrow( hrs_cat ) ) / ceiling( nrow( hrs_cat ) / 3 ) )
-
-hrs_cat <- hrs_cat[ record_categories == this_sample_break , ]
+hrs_cat <- hrs_cat[ split( seq( nrow( hrs_cat ) ) , sort( seq( nrow( hrs_cat ) ) %% 4 ) )[[ this_sample_break ]] , ]
 
 lodown( "hrs" , hrs_cat , 
 	your_username = my_username , 
