@@ -15,21 +15,21 @@ hrs_cat <-
 
 hrs_cat <- hrs_cat[ split( seq( nrow( hrs_cat ) ) , 1 + sort( seq( nrow( hrs_cat ) ) %% 4 ) )[[ this_sample_break ]] , ]
 
-lodown( "hrs" , hrs_cat , 
+hrs_cat <- lodown( "hrs" , hrs_cat , 
 	your_username = my_username , 
 	your_password = my_password )
 if( any( grepl( 'rand([a-z]+)stata\\.zip' , hrs_cat$file_name ) ) ){
-library(lodown)
-# examine all available HRS microdata files
-hrs_cat <-
-	get_catalog( "hrs" ,
-		output_dir = file.path( getwd() ) , 
-		your_username = my_username , 
-		your_password = my_password )
 
-# RAND consolidated file only
-hrs_cat <- subset( hrs_cat , grepl( 'rand([a-z]+)stata\\.zip' , file_name ) )
-# download the microdata to your local computer
+
+
+
+
+
+
+
+
+
+
 
 
 
