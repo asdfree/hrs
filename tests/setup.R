@@ -37,7 +37,13 @@ if( any( grepl( 'rand([a-z]+)stata\\.zip' , hrs_cat$file_name ) ) ){
 library(survey)
 
 hrs_df <- 
-	readRDS( list.files( hrs_cat$output_folder , full.names = TRUE ) )
+	readRDS( 
+		grepl( 
+			'rand([a-z]+)stata\\.zip' , 
+			hrs_cat$output_filename , 
+			value = TRUE 
+		) 
+	)
 	
 # RAM cleanup
 keep_vars <- 
