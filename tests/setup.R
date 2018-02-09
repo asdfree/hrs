@@ -38,7 +38,7 @@ library(survey)
 
 hrs_df <- 
 	readRDS( 
-		grepl( 
+		grep( 
 			'rand([a-z]+)stata\\.zip' , 
 			hrs_cat$output_filename , 
 			value = TRUE 
