@@ -76,14 +76,14 @@ hrs_design <-
 
 		working_in_2014 = r12work ,
 
-		marital_status_in_1996 =
+		marital_stat_1996 =
 			factor( r3mstat , levels = 1:8 , labels =
 				c( "Married" , "Married, spouse absent" ,
 				"Partnered" , "Separated" , "Divorced" ,
 				"Separated/divorced" , "Widowed" ,
 				"Never married" ) ) ,
 				
-		marital_status_in_2014 =
+		marital_stat_2014 =
 			factor( r12mstat , levels = 1:8 , labels =
 				c( "Married" , "Married, spouse absent" ,
 				"Partnered" , "Separated" , "Divorced" ,
@@ -92,27 +92,27 @@ hrs_design <-
 	)
 sum( weights( hrs_design , "sampling" ) != 0 )
 
-svyby( ~ one , ~ marital_status_in_1996 , hrs_design , unwtd.count )
+svyby( ~ one , ~ marital_stat_1996 , hrs_design , unwtd.count )
 svytotal( ~ one , hrs_design )
 
-svyby( ~ one , ~ marital_status_in_1996 , hrs_design , svytotal )
+svyby( ~ one , ~ marital_stat_1996 , hrs_design , svytotal )
 svymean( ~ h12ahous , hrs_design , na.rm = TRUE )
 
-svyby( ~ h12ahous , ~ marital_status_in_1996 , hrs_design , svymean , na.rm = TRUE )
-svymean( ~ marital_status_in_2014 , hrs_design , na.rm = TRUE )
+svyby( ~ h12ahous , ~ marital_stat_1996 , hrs_design , svymean , na.rm = TRUE )
+svymean( ~ marital_stat_2014 , hrs_design , na.rm = TRUE )
 
-svyby( ~ marital_status_in_2014 , ~ marital_status_in_1996 , hrs_design , svymean , na.rm = TRUE )
+svyby( ~ marital_stat_2014 , ~ marital_stat_1996 , hrs_design , svymean , na.rm = TRUE )
 svytotal( ~ h12ahous , hrs_design , na.rm = TRUE )
 
-svyby( ~ h12ahous , ~ marital_status_in_1996 , hrs_design , svytotal , na.rm = TRUE )
-svytotal( ~ marital_status_in_2014 , hrs_design , na.rm = TRUE )
+svyby( ~ h12ahous , ~ marital_stat_1996 , hrs_design , svytotal , na.rm = TRUE )
+svytotal( ~ marital_stat_2014 , hrs_design , na.rm = TRUE )
 
-svyby( ~ marital_status_in_2014 , ~ marital_status_in_1996 , hrs_design , svytotal , na.rm = TRUE )
+svyby( ~ marital_stat_2014 , ~ marital_stat_1996 , hrs_design , svytotal , na.rm = TRUE )
 svyquantile( ~ h12ahous , hrs_design , 0.5 , na.rm = TRUE )
 
 svyby( 
 	~ h12ahous , 
-	~ marital_status_in_1996 , 
+	~ marital_stat_1996 , 
 	hrs_design , 
 	svyquantile , 
 	0.5 ,
@@ -138,7 +138,7 @@ cv( this_result )
 grouped_result <-
 	svyby( 
 		~ h12ahous , 
-		~ marital_status_in_1996 , 
+		~ marital_stat_1996 , 
 		hrs_design , 
 		svymean ,
 		na.rm = TRUE 
@@ -159,12 +159,12 @@ svyciprop( ~ working_in_2014 , hrs_design ,
 	method = "likelihood" , na.rm = TRUE )
 svyttest( h12ahous ~ working_in_2014 , hrs_design )
 svychisq( 
-	~ working_in_2014 + marital_status_in_2014 , 
+	~ working_in_2014 + marital_stat_2014 , 
 	hrs_design 
 )
 glm_result <- 
 	svyglm( 
-		h12ahous ~ working_in_2014 + marital_status_in_2014 , 
+		h12ahous ~ working_in_2014 + marital_stat_2014 , 
 		hrs_design 
 	)
 
@@ -175,7 +175,7 @@ hrs_srvyr_design %>%
 	summarize( mean = survey_mean( h12ahous , na.rm = TRUE ) )
 
 hrs_srvyr_design %>%
-	group_by( marital_status_in_1996 ) %>%
+	group_by( marital_stat_1996 ) %>%
 	summarize( mean = survey_mean( h12ahous , na.rm = TRUE ) )
 
 }
